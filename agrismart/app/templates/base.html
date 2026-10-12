@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AgriSmart - AI Crop Advisory & Marketplace{% endblock %}</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+
+    <div class="app-layout">
+        <!-- Navigation -->
+        {% if current_user.is_authenticated %}
+            {% include 'components/navbar.html' %}
+        {% endif %}
+        
+        <!-- Flash Messages Container -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-container">
+                    {% for category, message in messages %}
+                        <div class="toast toast-{{ category }}">
+                            {% if category == 'error' %}
+                                <i data-lucide="alert-circle"></i>
+                            {% elif category == 'success' %}
+                                <i data-lucide="check-circle"></i>
+                            {% else %}
+                                <i data-lucide="info"></i>
+                            {% endif %}
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Main Content -->
+        <main class="{% if current_user.is_authenticated %}main-content{% else %}full-content{% endif %}">
+            {% block content %}{% endblock %}
+            
+            <!-- Footer -->
+            {% if not current_user.is_authenticated or request.endpoint == 'main.index' %}
+                {% include 'components/footer.html' %}
+            {% endif %}
+        </main>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+    
+    <script>
+        lucide.createIcons();
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for (var registration of registrations) {
+                    registration.unregister();
+                }
+            });
+        }
+    </script>
+</body>
+</html>

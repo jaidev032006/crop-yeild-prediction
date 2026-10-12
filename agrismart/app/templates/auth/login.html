@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Login - AgriSmart{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <!-- Left Side - Illustration -->
+    <div class="auth-left">
+        <div class="auth-illustration">
+            <svg viewBox="0 0 400 400" class="farm-svg">
+                <!-- Sky -->
+                <rect width="400" height="250" fill="#87CEEB" opacity="0.3"/>
+                
+                <!-- Sun -->
+                <circle cx="350" cy="50" r="40" fill="#f59e0b" opacity="0.8"/>
+                
+                <!-- Ground -->
+                <rect y="250" width="400" height="150" fill="#0f5132" opacity="0.15"/>
+                
+                <!-- Plant 1 -->
+                <g class="plant">
+                    <rect x="80" y="200" width="8" height="80" fill="#2d5016"/>
+                    <ellipse cx="84" cy="160" rx="20" ry="30" fill="#10b981"/>
+                    <ellipse cx="70" cy="180" rx="15" ry="25" fill="#10b981"/>
+                    <ellipse cx="98" cy="180" rx="15" ry="25" fill="#10b981"/>
+                </g>
+                
+                <!-- Plant 2 -->
+                <g class="plant" style="animation-delay: 0.3s;">
+                    <rect x="200" y="190" width="8" height="90" fill="#2d5016"/>
+                    <ellipse cx="204" cy="140" rx="25" ry="35" fill="#10b981"/>
+                    <ellipse cx="185" cy="165" rx="18" ry="28" fill="#10b981"/>
+                    <ellipse cx="223" cy="165" rx="18" ry="28" fill="#10b981"/>
+                </g>
+                
+                <!-- Plant 3 -->
+                <g class="plant" style="animation-delay: 0.6s;">
+                    <rect x="310" y="200" width="8" height="80" fill="#2d5016"/>
+                    <ellipse cx="314" cy="160" rx="20" ry="30" fill="#10b981"/>
+                    <ellipse cx="300" cy="180" rx="15" ry="25" fill="#10b981"/>
+                    <ellipse cx="328" cy="180" rx="15" ry="25" fill="#10b981"/>
+                </g>
+            </svg>
+            <h2>Welcome to AgriSmart</h2>
+            <p>Your trusted AI companion for smarter farming</p>
+        </div>
+    </div>
+    
+    <!-- Right Side - Login Form -->
+    <div class="auth-right">
+        <div class="auth-form-wrapper">
+            <div class="auth-header">
+                <h1>Sign In</h1>
+                <p>Access your AgriSmart account</p>
+            </div>
+            
+            <form method="POST" class="auth-form">
+                <div class="form-group">
+                    <label for="username_or_email">Username or Email</label>
+                    <input 
+                        type="text" 
+                        id="username_or_email" 
+                        name="username_or_email" 
+                        placeholder="Enter your username or email"
+                        required
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+                
+                <div class="form-group checkbox">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">Remember me</label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+                    Sign In
+                </button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Sign up here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes growPlant {
+        0%, 100% { transform: scaleY(1); }
+        50% { transform: scaleY(1.05); }
+    }
+    
+    .plant {
+        animation: growPlant 3s ease-in-out infinite;
+        transform-origin: bottom;
+    }
+</style>
+{% endblock %}

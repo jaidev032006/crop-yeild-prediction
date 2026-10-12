@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block title %}Farmer Feedback & Community - AgriSmart{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Farmer Feedback & Experience</h1>
+            <p class="page-subtitle">Help us improve the AgriSmart intelligence engine with your field observations and feedback.</p>
+        </div>
+        <div class="badge badge-amber">
+            <i data-lucide="star"></i>
+            <span>4.9 / 5 Average Farmer Rating</span>
+        </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1.1fr;gap:2rem;align-items:start;">
+        <!-- Left: Feedback Submission Form -->
+        <div class="glass-card">
+            <h3 style="font-size:1.2rem;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.5rem;">
+                <i data-lucide="message-square-plus" style="color:var(--color-emerald);"></i>
+                <span>Share Your Review</span>
+            </h3>
+            <p style="font-size:0.85rem;color:var(--text-tertiary);margin-bottom:1.5rem;">
+                Tell us about crop prediction accuracy, yield outcomes, or marketplace delivery in your region.
+            </p>
+
+            <form id="feedbackForm">
+                <!-- Star Rating -->
+                <div style="margin-bottom:1.5rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                        <label style="font-size:0.85rem;font-weight:600;">Rating</label>
+                        <span id="ratingDescriptor" style="font-size:0.85rem;font-weight:700;color:var(--color-amber);">5 / 5 Stars - Excellent Experience ⭐</span>
+                    </div>
+                    <div id="starRatingContainer" style="display:flex;gap:0.5rem;cursor:pointer;">
+                        {% for i in range(1, 6) %}
+                            <button type="button" class="star-btn" data-rating="{{ i }}" style="background:none;border:none;padding:0;cursor:pointer;outline:none;transition:transform 0.15s ease;">
+                                <svg class="rating-star-svg" data-rating="{{ i }}" width="36" height="36" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 2px 4px rgba(245,158,11,0.3));">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                </svg>
+                            </button>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" id="selectedRating" value="5">
+                </div>
+
+                <!-- Message Textarea -->
+                <div style="margin-bottom:1rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">
+                        <label style="font-size:0.85rem;font-weight:600;">Your Message</label>
+                        <span id="charCount" style="font-size:0.75rem;color:var(--text-muted);">0 / 500</span>
+                    </div>
+                    <textarea id="feedbackMessage" rows="4" required maxlength="500" placeholder="E.g. The fertilizer advisory for Rice helped increase my yield efficiency by 20% in Punjab..."
+                        style="width:100%;padding:0.85rem 1rem;border-radius:var(--radius-md);border:1px solid var(--border-color);background:var(--bg-muted);color:var(--text-primary);font-family:inherit;font-size:0.9rem;resize:vertical;"></textarea>
+                </div>
+
+                <!-- Public Visibility Toggle -->
+                <div style="margin-bottom:1.5rem;">
+                    <label style="display:flex;align-items:center;gap:0.6rem;font-size:0.85rem;color:var(--text-secondary);cursor:pointer;">
+                        <input type="checkbox" id="isPublicFeedback" checked style="width:16px;height:16px;accent-color:var(--color-emerald);">
+                        <span>Publish my review to the community testimonials wall</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg" id="submitFeedbackBtn" style="width:100%;">
+                    <i data-lucide="send"></i>
+                    <span>Submit Feedback</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Right: Community Testimonials Wall -->
+        <div>
+            <h3 style="font-size:1.2rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;">
+                <i data-lucide="users" style="color:var(--color-amber);"></i>
+                <span>Community Voice</span>
+            </h3>
+
+            {% if public_feedback %}
+                <div style="display:flex;flex-direction:column;gap:1rem;" id="testimonialsContainer">
+                    {% for fb in public_feedback %}
+                        <div class="glass-card" style="padding:1.25rem;">
+                            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;">
+                                <div style="display:flex;align-items:center;gap:0.75rem;">
+                                    <img src="{{ fb.user.avatar if fb.user else 'https://ui-avatars.com/api/?name=Farmer' }}" alt="Farmer" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                                    <div>
+                                        <h4 style="font-size:0.95rem;font-weight:700;">{{ fb.user.display_name if fb.user else 'Verified Farmer' }}</h4>
+                                        <span style="font-size:0.75rem;color:var(--text-muted);">{{ fb.user.location if fb.user and fb.user.location else 'Agricultural Producer' }} • {{ fb.created_at.strftime('%b %d, %Y') }}</span>
+                                    </div>
+                                </div>
+                                <!-- Star Rating Display -->
+                                <div style="display:flex;gap:2px;" title="{{ fb.rating }} out of 5 stars">
+                                    {% for s in range(5) %}
+                                        <svg width="18" height="18" viewBox="0 0 24 24" 
+                                             fill="{% if s < fb.rating %}#f59e0b{% else %}none{% endif %}" 
+                                             stroke="{% if s < fb.rating %}#f59e0b{% else %}#94a3b8{% endif %}" 
+                                             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                        </svg>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.5;">
+                                "{{ fb.message }}"
+                            </p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state glass-card">
+                    <div class="empty-state-icon">
+                        <i data-lucide="message-square"></i>
+                    </div>
+                    <h4 class="empty-state-title">Be the First to Review</h4>
+                    <p class="empty-state-text">Your field experience helps fellow farmers select optimal crops.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const starSvgs = document.querySelectorAll('.rating-star-svg');
+        const starBtns = document.querySelectorAll('.star-btn');
+        const ratingInput = document.getElementById('selectedRating');
+        const ratingDesc = document.getElementById('ratingDescriptor');
+        const textarea = document.getElementById('feedbackMessage');
+        const charCount = document.getElementById('charCount');
+        const form = document.getElementById('feedbackForm');
+
+        const descriptors = {
+            1: '1 / 5 Stars - Poor Experience ⚠️',
+            2: '2 / 5 Stars - Below Average 🌾',
+            3: '3 / 5 Stars - Average Outcome 🚜',
+            4: '4 / 5 Stars - Very Good & Helpful 🌱',
+            5: '5 / 5 Stars - Excellent Precision & Yield ⭐'
+        };
+
+        function renderStars(rating) {
+            starSvgs.forEach((svg, idx) => {
+                if (idx < rating) {
+                    svg.setAttribute('fill', '#f59e0b');
+                    svg.setAttribute('stroke', '#f59e0b');
+                    svg.style.transform = 'scale(1.08)';
+                    svg.style.filter = 'drop-shadow(0 2px 6px rgba(245,158,11,0.45))';
+                } else {
+                    svg.setAttribute('fill', 'none');
+                    svg.setAttribute('stroke', '#cbd5e1');
+                    svg.style.transform = 'scale(1)';
+                    svg.style.filter = 'none';
+                }
+            });
+            if (ratingDesc) {
+                ratingDesc.textContent = descriptors[rating] || `${rating} / 5 Stars`;
+            }
+        }
+
+        function setRating(rating) {
+            ratingInput.value = rating;
+            renderStars(rating);
+        }
+
+        // Initialize default 5 stars
+        setRating(5);
+
+        starBtns.forEach(btn => {
+            const r = parseInt(btn.dataset.rating);
+            btn.addEventListener('mouseenter', () => renderStars(r));
+            btn.addEventListener('click', () => setRating(r));
+        });
+
+        document.getElementById('starRatingContainer')?.addEventListener('mouseleave', () => {
+            renderStars(parseInt(ratingInput.value || 5));
+        });
+
+        if (textarea && charCount) {
+            textarea.addEventListener('input', () => {
+                charCount.textContent = `${textarea.value.length} / 500`;
+            });
+        }
+
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const payload = {
+                    rating: parseInt(ratingInput.value),
+                    message: textarea.value.trim(),
+                    is_public: document.getElementById('isPublicFeedback').checked
+                };
+
+                const btn = document.getElementById('submitFeedbackBtn');
+                btn.disabled = true;
+                btn.innerHTML = `<i data-lucide="loader" class="spin"></i> Submitting Review...`;
+                if (window.lucide) lucide.createIcons();
+
+                try {
+                    const res = await fetch('/feedback/api/submit', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        window.AgriApp?.showToast(data.message, 'success');
+                        textarea.value = '';
+                        setTimeout(() => window.location.reload(), 1200);
+                    } else {
+                        window.AgriApp?.showToast(data.message || 'Submission failed.', 'error');
+                    }
+                } catch (err) {
+                    window.AgriApp?.showToast('Network error submitting feedback.', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = `<i data-lucide="send"></i><span>Submit Feedback</span>`;
+                    if (window.lucide) lucide.createIcons();
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,175 @@
+/* =========================================
+   AGRISMART - ADMIN CONTROL ROOM STYLES
+   Dark, High-Tech, Data-Dense Theme
+   ========================================= */
+
+:root {
+    --admin-bg-base: #090d16;
+    --admin-bg-panel: #0f172a;
+    --admin-bg-card: #1e293b;
+    --admin-bg-hover: #334155;
+    --admin-border: rgba(255, 255, 255, 0.08);
+    --admin-border-glow: rgba(16, 185, 129, 0.4);
+    --admin-text-main: #f8fafc;
+    --admin-text-sub: #94a3b8;
+    --admin-text-muted: #64748b;
+    --admin-accent-green: #10b981;
+    --admin-accent-cyan: #06b6d4;
+    --admin-accent-amber: #f59e0b;
+    --admin-accent-red: #ef4444;
+}
+
+body.admin-body {
+    background-color: var(--admin-bg-base);
+    color: var(--admin-text-main);
+    font-family: 'Inter', sans-serif;
+}
+
+/* Control Room Header */
+.admin-topbar {
+    height: 64px;
+    background: var(--admin-bg-panel);
+    border-bottom: 1px solid var(--admin-border);
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.admin-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.admin-brand-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, #059669, #047857);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+}
+
+.admin-brand-text {
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.02em;
+}
+
+.admin-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--admin-accent-green);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.08em;
+}
+
+/* Data Tables in Control Room */
+.admin-table-wrap {
+    background: var(--admin-bg-panel);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.admin-table-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--admin-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    text-align: left;
+}
+
+.admin-table th {
+    background: rgba(0, 0, 0, 0.2);
+    color: var(--admin-text-sub);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid var(--admin-border);
+}
+
+.admin-table td {
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid var(--admin-border);
+    color: var(--admin-text-main);
+    vertical-align: middle;
+}
+
+.admin-table tbody tr {
+    transition: background var(--transition-fast);
+}
+
+.admin-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* Status Pill Select */
+.status-select {
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 1px solid transparent;
+    cursor: pointer;
+    background: var(--admin-bg-card);
+    color: var(--admin-text-main);
+    outline: none;
+}
+
+.status-select.Pending { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); }
+.status-select.Confirmed { background: rgba(59, 130, 246, 0.2); color: #93c5fd; border-color: rgba(59, 130, 246, 0.4); }
+.status-select.Shipped { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border-color: rgba(139, 92, 246, 0.4); }
+.status-select.Delivered { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border-color: rgba(16, 185, 129, 0.4); }
+.status-select.Cancelled { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border-color: rgba(239, 68, 68, 0.4); }
+
+/* KPI Grid */
+.admin-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.admin-kpi-card {
+    background: var(--admin-bg-panel);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--admin-accent-green);
+}

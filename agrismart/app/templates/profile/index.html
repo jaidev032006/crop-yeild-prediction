@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+
+{% block title %}Farmer Profile & History - AgriSmart{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Profile Hero Card -->
+    <div class="glass-card" style="margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.5rem;">
+        <div style="display:flex;align-items:center;gap:1.25rem;">
+            <img src="{{ user.avatar }}" alt="{{ user.display_name }}" style="width:76px;height:76px;border-radius:50%;object-fit:cover;border:3px solid var(--color-emerald);box-shadow:var(--shadow-md);">
+            <div>
+                <h1 style="font-size:1.75rem;font-weight:700;">{{ user.display_name }}</h1>
+                <div style="display:flex;gap:0.75rem;align-items:center;margin-top:0.35rem;flex-wrap:wrap;">
+                    <span style="font-size:0.85rem;color:var(--text-tertiary);">@{{ user.username }} • {{ user.email }}</span>
+                    <span class="badge badge-emerald"><i data-lucide="map-pin" style="width:12px;height:12px;"></i> {{ user.location or 'India' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:flex;gap:1.25rem;">
+            <div style="text-align:center;background:var(--bg-muted);padding:0.75rem 1.25rem;border-radius:var(--radius-md);border:1px solid var(--border-color);">
+                <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;">Predictions</span>
+                <div style="font-size:1.35rem;font-weight:800;color:var(--color-emerald-dark);font-family:var(--font-heading);">{{ predictions|length }}</div>
+            </div>
+            <div style="text-align:center;background:var(--bg-muted);padding:0.75rem 1.25rem;border-radius:var(--radius-md);border:1px solid var(--border-color);">
+                <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;">Orders</span>
+                <div style="font-size:1.35rem;font-weight:800;color:var(--color-amber-dark);font-family:var(--font-heading);">{{ orders|length }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Tabs -->
+    <div style="display:flex;gap:0.5rem;border-bottom:1px solid var(--border-color);margin-bottom:1.5rem;">
+        <button type="button" class="tab-btn active" data-tab="infoTab" style="padding:0.75rem 1.25rem;font-weight:600;color:var(--color-emerald);border-bottom:2px solid var(--color-emerald);background:none;cursor:pointer;display:flex;align-items:center;gap:0.5rem;">
+            <i data-lucide="user"></i> Account Settings
+        </button>
+        <button type="button" class="tab-btn" data-tab="predictionsTab" style="padding:0.75rem 1.25rem;font-weight:600;color:var(--text-tertiary);border-bottom:2px solid transparent;background:none;cursor:pointer;display:flex;align-items:center;gap:0.5rem;">
+            <i data-lucide="sprout"></i> Prediction History ({{ predictions|length }})
+        </button>
+        <button type="button" class="tab-btn" data-tab="ordersTab" style="padding:0.75rem 1.25rem;font-weight:600;color:var(--text-tertiary);border-bottom:2px solid transparent;background:none;cursor:pointer;display:flex;align-items:center;gap:0.5rem;">
+            <i data-lucide="package"></i> Order History ({{ orders|length }})
+        </button>
+    </div>
+
+    <!-- Tab 1: Account Settings -->
+    <div id="infoTab" class="tab-pane active">
+        <div style="display:grid;grid-template-columns:1.2fr 0.8fr;gap:2rem;align-items:start;">
+            <!-- Profile Info Form -->
+            <div class="glass-card">
+                <h3 style="font-size:1.2rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:0.5rem;">
+                    <i data-lucide="edit-3" style="color:var(--color-emerald);"></i>
+                    <span>Personal & Farm Details</span>
+                </h3>
+
+                <form id="profileUpdateForm">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+                        <div>
+                            <label style="font-size:0.85rem;font-weight:600;display:block;margin-bottom:0.35rem;">First Name</label>
+                            <input type="text" id="profFirstName" value="{{ user.first_name }}"
+                                style="width:100%;padding:0.65rem 1rem;border-radius:var(--radius-md);border:1px solid var(--border-color);background:var(--bg-muted);color:var(--text-primary);">
+                        </div>
+                        <div>
+                            <label style="font-size:0.85rem;font-weight:600;display:block;margin-bottom:0.35rem;">Last Name</label>
+                            <input type="text" id="profLastName" value="{{ user.last_name }}"
+                                style="width:100%;padding:0.65rem 1rem;border-radius:var(--radius-md);border:1px solid var(--border-color);background:var(--bg-muted);color:var(--text-primary);">
+                        </div>
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+                        <div>
+                            <label style="font-size:0.85rem;font-weight:600;display:block;margin-bottom:0.35rem;">Phone Number</label>
+                            <input type="tel" id="profPhone" value="{{ user.phone }}" placeholder="+91 98765 43210"
+                                style="width:100%;padding:0.65rem 1rem;border-radius:var(--radius-md);border:1px solid var(--border-color);background:var(--bg-muted);color:var(--text-primary);">
+                        </div>
+                        <div>
+                            <label style="font-size:0.85rem;font-weight:600;display:block;margin-bottom:0.35rem;">Farm Location / State</label>
+                            <input type="text" id="profLocation" value="{{ user.location }}" placeholder="e.g. Pune, Maharashtra"
+                                style="width:100%;padding:0.65rem 1rem;border-radius:var(--radius-md);border:1px solid var(--border-color);background:var(--bg-muted);color:var(--text-primary);">
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:1.5rem;">
+                        <label style="font-size:0.85rem;font-weight:600;display:block;margin-bottom:0.35rem;">Farm Bio / Crops Cultivated</label>
+                        <textarea id="profBio" rows="3" placeholder="Describe your farm acreage, irrigation type, and soil profile..."
+                            style="width:100%;padding:0.65rem 1rem;border-radius:var(--radius-md);border:1px solid var(--border-color);background:var(--bg-muted);color:var(--text-primary);resize:vertical;">{{ user.bio }}</textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="saveProfileBtn">
+                        <i data-lucide="save"></i>
+                        <span>Save Changes</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Password Change Form -->
+            <div class="glass-card">
+                <h3 style="font-size:1.2rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:0.5rem;">
+                    <i data-lucide="key" style="color:var(--color-amber);"></i>
+                    <span>Security & Password</span>
+                </h3>
+
+                <form id="changePasswordForm">
+                    <div style="margin-bottom:1rem;">
+                        <label style="font-size:0.85rem;font-weight:600;display:block;margin-bottom:0.35rem;">Current Password</label>
+                        <input type="password" id="currPassword" required
+                            style="width:100%;padding:0.65rem 1rem;border-radius:var(--radius-md);border:1px solid var(--border-color);background:var(--bg-muted);color:var(--text-primary);">
+                    </div>
+
+                    <div style="margin-bottom:1rem;">
+                        <label style="font-size:0.85rem;font-weight:600;display:block;margin-bottom:0.35rem;">New Password</label>
+                        <input type="password" id="newPassword" required minlength="6"
+                            style="width:100%;padding:0.65rem 1rem;border-radius:var(--radius-md);border:1px solid var(--border-color);background:var(--bg-muted);color:var(--text-primary);">
+                    </div>
+
+                    <div style="margin-bottom:1.5rem;">
+                        <label style="font-size:0.85rem;font-weight:600;display:block;margin-bottom:0.35rem;">Confirm New Password</label>
+                        <input type="password" id="confirmNewPassword" required minlength="6"
+                            style="width:100%;padding:0.65rem 1rem;border-radius:var(--radius-md);border:1px solid var(--border-color);background:var(--bg-muted);color:var(--text-primary);">
+                    </div>
+
+                    <button type="submit" class="btn btn-secondary" id="savePasswordBtn" style="width:100%;">
+                        <span>Update Password</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 2: Prediction History -->
+    <div id="predictionsTab" class="tab-pane" style="display:none;">
+        {% if predictions %}
+            <div style="display:flex;flex-direction:column;gap:1rem;">
+                {% for p in predictions %}
+                    <div class="glass-card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+                        <div>
+                            <div style="display:flex;align-items:center;gap:0.75rem;">
+                                <span class="badge badge-emerald">Crop Advisory</span>
+                                <h3 style="font-size:1.35rem;font-weight:700;">{{ p.predicted_crop }}</h3>
+                            </div>
+                            <div style="font-size:0.825rem;color:var(--text-secondary);margin-top:0.35rem;">
+                                N: {{ p.nitrogen }} • P: {{ p.phosphorus }} • K: {{ p.potassium }} | Temp: {{ p.temperature }}°C | pH: {{ p.ph }} | Rain: {{ p.rainfall }}mm
+                            </div>
+                            <span style="font-size:0.75rem;color:var(--text-muted);">{{ p.created_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                        </div>
+
+                        <div style="display:flex;align-items:center;gap:1.5rem;">
+                            <div style="text-align:center;">
+                                <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:600;">Est. Yield</span>
+                                <div style="font-size:1.25rem;font-weight:700;color:var(--color-emerald-dark);">{{ p.yield_estimate }} t/ha</div>
+                            </div>
+                            <div style="text-align:center;">
+                                <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:600;">Confidence</span>
+                                <div style="font-size:1.25rem;font-weight:700;color:var(--color-emerald);">{{ p.confidence }}%</div>
+                            </div>
+                            <a href="{{ url_for('predict.download_report', prediction_id=p.id) }}" class="btn btn-outline btn-sm">
+                                <i data-lucide="file-down"></i>
+                                <span>PDF Report</span>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state glass-card">
+                <div class="empty-state-icon"><i data-lucide="sprout"></i></div>
+                <h4 class="empty-state-title">No Predictions Logged</h4>
+                <p class="empty-state-text">Run your first AI crop prediction to see historical records here.</p>
+                <a href="{{ url_for('predict.index') }}" class="btn btn-primary btn-sm">Run Prediction</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Tab 3: Order History -->
+    <div id="ordersTab" class="tab-pane" style="display:none;">
+        {% if orders %}
+            <div style="display:flex;flex-direction:column;gap:1rem;">
+                {% for order in orders %}
+                    <div class="glass-card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+                        <div>
+                            <strong>#{{ order.order_number }}</strong>
+                            <div style="font-size:0.8rem;color:var(--text-muted);">Placed on {{ order.created_at.strftime('%b %d, %Y') }} • {{ order.items|length }} Item(s)</div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:1.5rem;">
+                            <span class="badge {% if order.status == 'Delivered' %}badge-emerald{% elif order.status == 'Shipped' %}badge-blue{% else %}badge-amber{% endif %}">
+                                {{ order.status }}
+                            </span>
+                            <span style="font-size:1.25rem;font-weight:700;font-family:var(--font-heading);">₹{{ "%.2f"|format(order.total_amount) }}</span>
+                            <a href="{{ url_for('marketplace.orders') }}" class="btn btn-secondary btn-sm">Track</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state glass-card">
+                <div class="empty-state-icon"><i data-lucide="shopping-bag"></i></div>
+                <h4 class="empty-state-title">No Orders Yet</h4>
+                <p class="empty-state-text">Visit the marketplace to purchase high-yield seeds and fertilizers.</p>
+                <a href="{{ url_for('marketplace.index') }}" class="btn btn-amber btn-sm">Visit Store</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Tab switching
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => {
+                    b.style.color = 'var(--text-tertiary)';
+                    b.style.borderBottomColor = 'transparent';
+                });
+                tabPanes.forEach(p => p.style.display = 'none');
+
+                btn.style.color = 'var(--color-emerald)';
+                btn.style.borderBottomColor = 'var(--color-emerald)';
+                const target = document.getElementById(btn.dataset.tab);
+                if (target) target.style.display = 'block';
+            });
+        });
+
+        // Profile Update Form
+        const profForm = document.getElementById('profileUpdateForm');
+        if (profForm) {
+            profForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const payload = {
+                    first_name: document.getElementById('profFirstName').value.trim(),
+                    last_name: document.getElementById('profLastName').value.trim(),
+                    phone: document.getElementById('profPhone').value.trim(),
+                    location: document.getElementById('profLocation').value.trim(),
+                    bio: document.getElementById('profBio').value.trim()
+                };
+
+                const btn = document.getElementById('saveProfileBtn');
+                btn.disabled = true;
+
+                try {
+                    const res = await fetch('/profile/api/update', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        window.AgriApp?.showToast('Profile updated successfully!', 'success');
+                    } else {
+                        window.AgriApp?.showToast(data.message || 'Update failed.', 'error');
+                    }
+                } catch (err) {
+                    window.AgriApp?.showToast('Network error updating profile.', 'error');
+                } finally {
+                    btn.disabled = false;
+                }
+            });
+        }
+
+        // Change Password Form
+        const pwdForm = document.getElementById('changePasswordForm');
+        if (pwdForm) {
+            pwdForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const payload = {
+                    current_password: document.getElementById('currPassword').value,
+                    new_password: document.getElementById('newPassword').value,
+                    confirm_password: document.getElementById('confirmNewPassword').value
+                };
+
+                const btn = document.getElementById('savePasswordBtn');
+                btn.disabled = true;
+
+                try {
+                    const res = await fetch('/profile/api/change-password', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        window.AgriApp?.showToast('Password updated successfully!', 'success');
+                        pwdForm.reset();
+                    } else {
+                        window.AgriApp?.showToast(data.message || 'Password update failed.', 'error');
+                    }
+                } catch (err) {
+                    window.AgriApp?.showToast('Network error updating password.', 'error');
+                } finally {
+                    btn.disabled = false;
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

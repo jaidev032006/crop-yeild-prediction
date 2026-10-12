@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Room - AgriSmart Operations Hub</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <style>
+        .admin-order-item-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin: 2px 0;
+        }
+        .admin-pill-tag {
+            font-size: 0.72rem;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+    </style>
+</head>
+<body class="admin-body">
+    <!-- Top Navigation Bar -->
+    <header class="admin-topbar">
+        <div class="admin-brand">
+            <div class="admin-brand-icon">
+                <i data-lucide="terminal"></i>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem;">
+                <span class="admin-brand-text">AgriSmart Engine</span>
+                <span class="admin-tag">CONTROL ROOM</span>
+            </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:1.5rem;">
+            <!-- Live Server Time -->
+            <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;background:#090d16;padding:0.4rem 0.85rem;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,0.1);">
+                <i data-lucide="clock" style="width:14px;height:14px;color:#10b981;"></i>
+                <span id="adminServerClock" style="font-family:var(--font-heading);font-weight:700;color:#f8fafc;">--:--:--</span>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:0.6rem;font-size:0.85rem;color:#94a3b8;">
+                <span style="width:8px;height:8px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981;"></span>
+                <span>Operator: <strong>{{ admin.username }}</strong></span>
+            </div>
+            <a href="{{ url_for('admin.logout') }}" class="btn btn-secondary btn-sm" style="background:#1e293b;border-color:rgba(255,255,255,0.1);color:#fca5a5;">
+                <i data-lucide="power"></i>
+                <span>Disconnect Session</span>
+            </a>
+        </div>
+    </header>
+
+    <div style="padding:2rem;max-width:1550px;margin:0 auto;">
+        <!-- Forced Password Reset Banner (if first login) -->
+        {% if admin.force_change_password %}
+            <div id="pwdNoticeBanner" style="background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.4);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+                <div style="display:flex;align-items:center;gap:0.75rem;color:#fcd34d;">
+                    <i data-lucide="key" style="width:24px;height:24px;"></i>
+                    <div>
+                        <strong>Security Notice: Default Password Active</strong>
+                        <div style="font-size:0.825rem;color:#cbd5e1;">Please establish a new master password for the control room administrator.</div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-amber btn-sm" id="openChangePwdModal">
+                    <span>Change Admin Password</span>
+                </button>
+            </div>
+        {% endif %}
+
+        <!-- KPI Grid -->
+        <div class="admin-kpi-grid">
+            <div class="admin-kpi-card">
+                <span style="font-size:0.75rem;color:var(--admin-text-sub);text-transform:uppercase;font-weight:700;">Total Farmers</span>
+                <h3 style="font-size:1.85rem;font-weight:700;margin-top:0.25rem;color:#10b981;">{{ total_users }}</h3>
+                <span style="font-size:0.75rem;color:#64748b;">Registered farm accounts</span>
+            </div>
+
+            <div class="admin-kpi-card">
+                <span style="font-size:0.75rem;color:var(--admin-text-sub);text-transform:uppercase;font-weight:700;">Predictions Run</span>
+                <h3 style="font-size:1.85rem;font-weight:700;margin-top:0.25rem;color:#3b82f6;">{{ total_predictions }}</h3>
+                <span style="font-size:0.75rem;color:#64748b;">RandomForest inferences</span>
+            </div>
+
+            <div class="admin-kpi-card">
+                <span style="font-size:0.75rem;color:var(--admin-text-sub);text-transform:uppercase;font-weight:700;">Marketplace Orders</span>
+                <h3 style="font-size:1.85rem;font-weight:700;margin-top:0.25rem;color:#f59e0b;">{{ total_orders }}</h3>
+                <span style="font-size:0.75rem;color:#64748b;">Farmer supply orders</span>
+            </div>
+
+            <div class="admin-kpi-card">
+                <span style="font-size:0.75rem;color:var(--admin-text-sub);text-transform:uppercase;font-weight:700;">Gross Revenue (GMV)</span>
+                <h3 style="font-size:1.85rem;font-weight:700;margin-top:0.25rem;color:#10b981;">₹{{ "%.2f"|format(total_revenue) }}</h3>
+                <span style="font-size:0.75rem;color:#64748b;">Total seed & fertilizer volume</span>
+            </div>
+        </div>
+
+        <!-- 7-Day Growth Trend Chart -->
+        <div class="admin-table-wrap" style="padding:1.5rem;margin-bottom:2rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                <h3 style="font-size:1.15rem;display:flex;align-items:center;gap:0.5rem;">
+                    <i data-lucide="trending-up" style="color:#10b981;"></i>
+                    <span>Platform Telemetry (Last 7 Days)</span>
+                </h3>
+                <div style="display:flex;gap:1rem;font-size:0.8rem;color:#94a3b8;">
+                    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;background:#10b981;border-radius:2px;"></span> Predictions</span>
+                    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;background:#f59e0b;border-radius:2px;"></span> Orders</span>
+                </div>
+            </div>
+            <div style="height:220px;">
+                <canvas id="adminTrendChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 1. Real-Time Orders & Payment Management Table -->
+        <div class="admin-table-wrap" style="margin-bottom:2.5rem;">
+            <div class="admin-table-header" style="flex-wrap:wrap;gap:1rem;">
+                <div>
+                    <h3 style="font-size:1.15rem;display:flex;align-items:center;gap:0.5rem;">
+                        <i data-lucide="shopping-bag" style="color:#f59e0b;"></i>
+                        <span>Live Farmer Orders & Payments</span>
+                    </h3>
+                    <span style="font-size:0.8rem;color:#64748b;">Instant incoming orders, delivery addresses, payment methods and fulfillment</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+                    <input type="text" id="orderSearchInput" placeholder="Search by Order #, Buyer, City..." 
+                        style="padding:0.4rem 0.8rem;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,0.1);background:#090d16;color:#f8fafc;font-size:0.85rem;width:240px;">
+                    <a href="{{ url_for('admin.export_orders') }}" class="btn btn-amber btn-sm">
+                        <i data-lucide="download"></i>
+                        <span>Export Orders CSV</span>
+                    </a>
+                </div>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="admin-table" id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>Order # & Placed Date</th>
+                            <th>Customer / Delivery Details</th>
+                            <th>Items in Package</th>
+                            <th>Amount & Shipping</th>
+                            <th>Payment Option & Status</th>
+                            <th>Fulfillment Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if orders %}
+                            {% for order in orders %}
+                                <tr id="orderRow-{{ order.id }}">
+                                    <!-- Order Number & Date -->
+                                    <td>
+                                        <div style="font-family:var(--font-heading);font-weight:700;color:#f8fafc;font-size:0.95rem;">
+                                            #{{ order.order_number }}
+                                        </div>
+                                        <div style="font-size:0.75rem;color:#64748b;margin-top:2px;">
+                                            {{ order.created_at.strftime('%b %d, %Y - %I:%M %p') }}
+                                        </div>
+                                    </td>
+
+                                    <!-- Customer Information & Full Address -->
+                                    <td>
+                                        <div style="font-weight:700;color:#f1f5f9;">{{ order.shipping_name }}</div>
+                                        <div style="font-size:0.78rem;color:#10b981;display:flex;align-items:center;gap:3px;margin:2px 0;">
+                                            <i data-lucide="phone" style="width:12px;height:12px;"></i>
+                                            <span>{{ order.shipping_phone }}</span>
+                                        </div>
+                                        <div style="font-size:0.75rem;color:#94a3b8;max-width:240px;line-height:1.3;">
+                                            {{ order.shipping_address }}, {{ order.shipping_city }}
+                                        </div>
+                                    </td>
+
+                                    <!-- Items Breakdown -->
+                                    <td>
+                                        <div style="display:flex;flex-direction:column;gap:3px;">
+                                            {% for item in order.items %}
+                                                <div class="admin-order-item-chip">
+                                                    <span style="font-weight:700;color:#10b981;">{{ item.quantity }}x</span>
+                                                    <span>{{ item.product.name if item.product else 'Agricultural Item' }}</span>
+                                                    <span style="color:#94a3b8;">(₹{{ "%.2f"|format(item.unit_price) }})</span>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+
+                                    <!-- Pricing and Free Delivery logic -->
+                                    <td>
+                                        <div style="font-size:1.15rem;font-weight:800;color:#10b981;font-family:var(--font-heading);">
+                                            ₹{{ "%.2f"|format(order.total_amount) }}
+                                        </div>
+                                        {% if order.total_amount >= 500 %}
+                                            <span class="admin-pill-tag" style="background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);">
+                                                🚚 FREE Delivery (>= ₹500)
+                                            </span>
+                                        {% else %}
+                                            <span class="admin-pill-tag" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);">
+                                                Standard Delivery (+₹50)
+                                            </span>
+                                        {% endif %}
+                                    </td>
+
+                                    <!-- Payment Option & Status -->
+                                    <td>
+                                        <div>
+                                            {% if 'UPI' in order.payment_method %}
+                                                <span class="admin-pill-tag" style="background:rgba(16,185,129,0.2);color:#34d399;border:1px solid rgba(16,185,129,0.4);">
+                                                    📱 {{ order.payment_method }}
+                                                </span>
+                                            {% elif 'Card' in order.payment_method %}
+                                                <span class="admin-pill-tag" style="background:rgba(59,130,246,0.2);color:#60a5fa;border:1px solid rgba(59,130,246,0.4);">
+                                                    💳 {{ order.payment_method }}
+                                                </span>
+                                            {% elif 'Net Banking' in order.payment_method %}
+                                                <span class="admin-pill-tag" style="background:rgba(139,92,246,0.2);color:#a78bfa;border:1px solid rgba(139,92,246,0.4);">
+                                                    🏦 {{ order.payment_method }}
+                                                </span>
+                                            {% else %}
+                                                <span class="admin-pill-tag" style="background:rgba(245,158,11,0.2);color:#fbbf24;border:1px solid rgba(245,158,11,0.4);">
+                                                    📦 {{ order.payment_method }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        <div style="font-size:0.75rem;color:#94a3b8;margin-top:4px;">
+                                            Status: <strong style="color:{% if 'Paid' in order.payment_status or 'Paid' in order.payment_method %}#10b981{% else %}#f59e0b{% endif %};">{{ order.payment_status }}</strong>
+                                        </div>
+                                    </td>
+
+                                    <!-- Instant AJAX Order Status Selector -->
+                                    <td>
+                                        <select class="status-select {{ order.status }}" onchange="updateOrderStatus({{ order.id }}, this.value, this)">
+                                            {% for st in ['Pending', 'Confirmed', 'Shipped', 'Delivered', 'Cancelled'] %}
+                                                <option value="{{ st }}" {% if order.status == st %}selected{% endif %}>{{ st }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" style="text-align:center;padding:3rem 1rem;color:#94a3b8;">
+                                    <i data-lucide="package-open" style="width:40px;height:40px;margin-bottom:0.5rem;display:inline-block;opacity:0.5;"></i>
+                                    <div>No marketplace orders logged yet. Farmer orders will appear here automatically in real time.</div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 2. Complete Farmer Directory Table -->
+        <div class="admin-table-wrap" style="margin-bottom:2.5rem;">
+            <div class="admin-table-header" style="flex-wrap:wrap;gap:1rem;">
+                <div>
+                    <h3 style="font-size:1.15rem;display:flex;align-items:center;gap:0.5rem;">
+                        <i data-lucide="users" style="color:#10b981;"></i>
+                        <span>Registered Farmer Directory & Profiles</span>
+                    </h3>
+                    <span style="font-size:0.8rem;color:#64748b;">Complete farmer intelligence: predictions, total volume spent, account state</span>
+                </div>
+                <input type="text" id="userSearchInput" placeholder="Filter farmers by name, phone, email..." 
+                    style="padding:0.4rem 0.8rem;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,0.1);background:#090d16;color:#f8fafc;font-size:0.85rem;width:260px;">
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="admin-table" id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>Farmer Profile</th>
+                            <th>Contact & Location</th>
+                            <th>AI Predictions</th>
+                            <th>Total Orders</th>
+                            <th>Total Spent (INR)</th>
+                            <th>Joined Date</th>
+                            <th>Account Status</th>
+                            <th>Controls</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                            {% set user_spend = u.orders | selectattr('status', 'ne', 'Cancelled') | map(attribute='total_amount') | sum %}
+                            <tr id="userRow-{{ u.id }}">
+                                <td>
+                                    <div style="display:flex;align-items:center;gap:0.75rem;">
+                                        <img src="{{ u.avatar }}" alt="" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,0.1);">
+                                        <div>
+                                            <strong style="color:#f8fafc;">{{ u.display_name }}</strong>
+                                            <div style="font-size:0.75rem;color:#64748b;">@{{ u.username }} (ID #{{ u.id }})</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="font-size:0.85rem;color:#cbd5e1;">{{ u.email }}</div>
+                                    <div style="font-size:0.75rem;color:#94a3b8;">
+                                        📞 {{ u.phone or 'Not provided' }} • 📍 {{ u.location or 'India' }}
+                                    </div>
+                                </td>
+                                <td><span class="badge badge-emerald">{{ u.predictions|length }} Inferences</span></td>
+                                <td><span class="badge badge-amber">{{ u.orders|length }} Orders</span></td>
+                                <td>
+                                    <strong style="color:#10b981;font-family:var(--font-heading);font-size:0.95rem;">
+                                        ₹{{ "%.2f"|format(user_spend) }}
+                                    </strong>
+                                </td>
+                                <td style="font-size:0.8rem;color:#64748b;">{{ u.created_at.strftime('%b %d, %Y') }}</td>
+                                <td>
+                                    <span class="badge {% if u.is_active %}badge-emerald{% else %}badge-gray{% endif %}" id="userStatusBadge-{{ u.id }}">
+                                        {{ 'Active' if u.is_active else 'Disabled' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div style="display:flex;gap:0.4rem;">
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="toggleUserStatus({{ u.id }})" title="Toggle Active / Disabled Status">
+                                            <i data-lucide="power" style="width:14px;height:14px;"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-secondary btn-sm" style="color:#ef4444;" onclick="deleteUser({{ u.id }})" title="Delete Farmer Account">
+                                            <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 3. AI Prediction Logs & CSV Export -->
+        <div class="admin-table-wrap">
+            <div class="admin-table-header">
+                <div>
+                    <h3 style="font-size:1.15rem;display:flex;align-items:center;gap:0.5rem;">
+                        <i data-lucide="database" style="color:#06b6d4;"></i>
+                        <span>AI Inference Log Telemetry</span>
+                    </h3>
+                    <span style="font-size:0.8rem;color:#64748b;">Recent predictions generated across farmer fields</span>
+                </div>
+                <a href="{{ url_for('admin.export_predictions') }}" class="btn btn-primary btn-sm">
+                    <i data-lucide="download"></i>
+                    <span>Export Full CSV Log</span>
+                </a>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Farmer</th>
+                            <th>N-P-K (mg/kg)</th>
+                            <th>Climate (T / H / pH / Rain)</th>
+                            <th>Predicted Crop</th>
+                            <th>Confidence</th>
+                            <th>Yield</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in predictions %}
+                            <tr>
+                                <td>#{{ p.id }}</td>
+                                <td>{{ p.user.display_name if p.user else 'Unknown' }}</td>
+                                <td>{{ p.nitrogen }} - {{ p.phosphorus }} - {{ p.potassium }}</td>
+                                <td>{{ p.temperature }}°C | {{ p.humidity }}% | pH {{ p.ph }} | {{ p.rainfall }}mm</td>
+                                <td><strong style="color:#10b981;">{{ p.predicted_crop }}</strong></td>
+                                <td>{{ p.confidence }}%</td>
+                                <td>{{ p.yield_estimate }} t/ha</td>
+                                <td style="font-size:0.75rem;color:#64748b;">{{ p.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Reset Modal -->
+    <div id="adminChangePwdModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;padding:1.5rem;">
+        <div style="background:#0f172a;border:1px solid rgba(255,255,255,0.15);border-radius:var(--radius-xl);padding:2rem;width:100%;max-width:400px;">
+            <h3 style="font-size:1.25rem;margin-bottom:1rem;color:#f8fafc;">Update Master Password</h3>
+            <form id="adminPwdForm">
+                <div style="margin-bottom:1rem;">
+                    <label style="font-size:0.825rem;color:#94a3b8;display:block;margin-bottom:0.35rem;">New Password (Min 6 chars)</label>
+                    <input type="password" id="newAdminPwd" required minlength="6" style="width:100%;padding:0.65rem 1rem;background:#090d16;border:1px solid rgba(255,255,255,0.12);border-radius:var(--radius-md);color:#f8fafc;">
+                </div>
+                <div style="margin-bottom:1.5rem;">
+                    <label style="font-size:0.825rem;color:#94a3b8;display:block;margin-bottom:0.35rem;">Confirm New Password</label>
+                    <input type="password" id="confirmAdminPwd" required minlength="6" style="width:100%;padding:0.65rem 1rem;background:#090d16;border:1px solid rgba(255,255,255,0.12);border-radius:var(--radius-md);color:#f8fafc;">
+                </div>
+                <div style="display:flex;gap:0.75rem;">
+                    <button type="submit" class="btn btn-primary" style="flex:1;">Save Password</button>
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('adminChangePwdModal').style.display='none'">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Flash Container -->
+    <div class="flash-container" id="adminToastContainer"></div>
+
+    <script>
+        lucide.createIcons();
+
+        // Real-time Topbar Clock
+        const adminClock = document.getElementById('adminServerClock');
+        if (adminClock) {
+            const updateAdminClock = () => {
+                const now = new Date();
+                adminClock.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+            };
+            updateAdminClock();
+            setInterval(updateAdminClock, 1000);
+        }
+
+        // 7-day trend chart
+        const trendCtx = document.getElementById('adminTrendChart');
+        if (trendCtx) {
+            new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: {{ chart_dates|tojson }},
+                    datasets: [
+                        {
+                            label: 'Daily Predictions',
+                            data: {{ chart_predictions|tojson }},
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16,185,129,0.1)',
+                            fill: true,
+                            tension: 0.35
+                        },
+                        {
+                            label: 'Marketplace Orders',
+                            data: {{ chart_orders|tojson }},
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245,158,11,0.1)',
+                            fill: true,
+                            tension: 0.35
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#94a3b8' } }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } },
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b', precision: 0 } }
+                    }
+                }
+            });
+        }
+
+        // Live Order Status Update
+        async function updateOrderStatus(orderId, newStatus, selectEl) {
+            try {
+                const res = await fetch(`/admin/api/orders/${orderId}/update-status`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    selectEl.className = `status-select ${newStatus}`;
+                    showAdminToast(`Order #${orderId} status updated to ${newStatus}`, 'success');
+                } else {
+                    showAdminToast(data.message || 'Status update failed.', 'error');
+                }
+            } catch (err) {
+                showAdminToast('Network error updating status.', 'error');
+            }
+        }
+
+        // Toggle User Status
+        async function toggleUserStatus(userId) {
+            try {
+                const res = await fetch(`/admin/api/users/${userId}/toggle-status`, { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    const badge = document.getElementById(`userStatusBadge-${userId}`);
+                    if (badge) {
+                        badge.textContent = data.is_active ? 'Active' : 'Disabled';
+                        badge.className = `badge ${data.is_active ? 'badge-emerald' : 'badge-gray'}`;
+                    }
+                    showAdminToast(data.message, 'success');
+                }
+            } catch (err) {
+                showAdminToast('Failed to toggle user status.', 'error');
+            }
+        }
+
+        // Delete User
+        async function deleteUser(userId) {
+            if (!confirm('Are you sure you want to permanently delete this user account?')) return;
+            try {
+                const res = await fetch(`/admin/api/users/${userId}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById(`userRow-${userId}`)?.remove();
+                    showAdminToast(data.message, 'success');
+                }
+            } catch (err) {
+                showAdminToast('Failed to delete user.', 'error');
+            }
+        }
+
+        // Password Change Modal Handlers
+        const openPwdModal = document.getElementById('openChangePwdModal');
+        const pwdModal = document.getElementById('adminChangePwdModal');
+        if (openPwdModal) {
+            openPwdModal.addEventListener('click', () => {
+                pwdModal.style.display = 'flex';
+            });
+        }
+
+        const adminPwdForm = document.getElementById('adminPwdForm');
+        if (adminPwdForm) {
+            adminPwdForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const new_password = document.getElementById('newAdminPwd').value;
+                const confirm_password = document.getElementById('confirmAdminPwd').value;
+
+                try {
+                    const res = await fetch('/admin/api/change-password', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ new_password, confirm_password })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showAdminToast(data.message, 'success');
+                        pwdModal.style.display = 'none';
+                        document.getElementById('pwdNoticeBanner')?.remove();
+                    } else {
+                        showAdminToast(data.message || 'Password update failed.', 'error');
+                    }
+                } catch (err) {
+                    showAdminToast('Network error updating password.', 'error');
+                }
+            });
+        }
+
+        function showAdminToast(msg, type = 'info') {
+            const container = document.getElementById('adminToastContainer');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `<span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+
+        // Filter User Search
+        const userSearch = document.getElementById('userSearchInput');
+        if (userSearch) {
+            userSearch.addEventListener('input', () => {
+                const term = userSearch.value.toLowerCase();
+                document.querySelectorAll('#usersTable tbody tr').forEach(row => {
+                    row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+                });
+            });
+        }
+
+        // Filter Orders Search
+        const orderSearch = document.getElementById('orderSearchInput');
+        if (orderSearch) {
+            orderSearch.addEventListener('input', () => {
+                const term = orderSearch.value.toLowerCase();
+                document.querySelectorAll('#ordersTable tbody tr').forEach(row => {
+                    row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+                });
+            });
+        }
+    </script>
+</body>
+</html>

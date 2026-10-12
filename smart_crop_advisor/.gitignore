@@ -1,0 +1,26 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+
+# Environments
+.venv/
+env/
+venv/
+.env
+
+# Model weights & binaries (except initial demo weights)
+models/*.h5
+models/*.keras
+models/*.pt
+models/*.pth
+
+# Logs & temp
+*.log
+*.sqlite3
+*.db
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}AgriSmart - Smart Crop Advisory & Marketplace{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Landing Navigation Top Bar -->
+<header class="landing-nav">
+    <div class="container landing-nav-container">
+        <a href="{{ url_for('main.index') }}" class="landing-brand">
+            <div class="brand-badge-icon">
+                <i data-lucide="sprout"></i>
+            </div>
+            <span class="brand-title">AgriSmart</span>
+        </a>
+        <nav class="landing-menu">
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="{{ url_for('marketplace.index') }}">Marketplace</a>
+            <a href="#testimonials">Reviews</a>
+        </nav>
+        <div class="landing-actions">
+            <!-- Global Theme Toggle Button -->
+            <button class="theme-toggle-btn" id="theme-toggle" title="Toggle Dark / Light Mode" aria-label="Toggle theme">
+                <i data-lucide="moon"></i>
+            </button>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-ghost btn-sm">Sign In</a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Get Started</a>
+        </div>
+    </div>
+</header>
+
+<!-- Hero Section with 3D Background & Interactive Holographic Elements -->
+<section class="hero" id="hero-section">
+    <!-- 3D Image Canvas Backdrop -->
+    <div class="hero-bg-3d-wrapper">
+        <div class="hero-bg-3d-img"></div>
+        <div class="hero-bg-grid"></div>
+        <div class="hero-glow-orb orb-1"></div>
+        <div class="hero-glow-orb orb-2"></div>
+        <canvas id="hero-particle-canvas"></canvas>
+    </div>
+    
+    <div class="container hero-container-3d">
+        <!-- Floating 3D Holographic Info Badges -->
+        <div class="hero-float-card float-card-top-left animate-float-slow">
+            <div class="float-icon-wrapper">
+                <i data-lucide="sprout"></i>
+            </div>
+            <div class="float-card-info">
+                <div class="float-status-dot"></div>
+                <span class="float-title">AI Crop Advisory</span>
+                <span class="float-val">+38% Yield Potential</span>
+            </div>
+        </div>
+
+        <div class="hero-float-card float-card-top-right animate-float-mid">
+            <div class="float-icon-wrapper amber-glow">
+                <i data-lucide="activity"></i>
+            </div>
+            <div class="float-card-info">
+                <span class="float-title">Soil Telemetry</span>
+                <span class="float-val">NPK Optimal &bull; 78% Moist</span>
+            </div>
+        </div>
+
+        <div class="hero-float-card float-card-bot-left animate-float-alt">
+            <div class="float-icon-wrapper">
+                <i data-lucide="cpu"></i>
+            </div>
+            <div class="float-card-info">
+                <span class="float-title">ML Random Forest</span>
+                <span class="float-val">99.2% Prediction Accuracy</span>
+            </div>
+        </div>
+
+        <div class="hero-float-card float-card-bot-right animate-float-slow">
+            <div class="float-icon-wrapper">
+                <i data-lucide="map-pin"></i>
+            </div>
+            <div class="float-card-info">
+                <span class="float-title">Active Region</span>
+                <span class="float-val">Theni, Uthamapalayam</span>
+            </div>
+        </div>
+
+        <div class="hero-content hero-content-tilt">
+            <h1 class="hero-title animate-slide-up" style="animation-delay: 80ms;">
+                Grow Smarter,<br>Harvest Better
+            </h1>
+            <p class="hero-subtitle animate-slide-up" style="animation-delay: 160ms;">
+                AI-powered crop recommendations, real-time soil analysis, and a trusted marketplace — all in one platform.
+            </p>
+            <div class="hero-cta animate-slide-up" style="animation-delay: 240ms;">
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg hero-btn-glow">Get Started Free</a>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-secondary btn-lg">Sign In</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section" id="features">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card animate-slide-up">
+                <div class="stat-number" data-count="10000">0</div>
+                <div class="stat-label">Predictions Made</div>
+            </div>
+            <div class="stat-card animate-slide-up" style="animation-delay: 100ms;">
+                <div class="stat-number" data-count="5000">0</div>
+                <div class="stat-label">Active Farmers</div>
+            </div>
+            <div class="stat-card animate-slide-up" style="animation-delay: 200ms;">
+                <div class="stat-number">98.6<span>%</span></div>
+                <div class="stat-label">Accuracy Rate</div>
+            </div>
+            <div class="stat-card animate-slide-up" style="animation-delay: 300ms;">
+                <div class="stat-number" data-count="250">0</div>
+                <div class="stat-label">Products Available</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works with 3D Render Photos -->
+<section class="how-it-works" id="how-it-works">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">How It Works</h2>
+        
+        <div class="steps-grid">
+            <!-- Step 1: Analyze Soil -->
+            <div class="step-card step-card-with-img animate-slide-up">
+                <div class="step-img-wrapper">
+                    <img src="{{ url_for('static', filename='images/step-analyze-soil.jpg') }}" alt="Analyze Soil Telemetry" class="step-img" loading="lazy">
+                    <div class="step-number-badge">01</div>
+                    <div class="step-icon-float">
+                        <i data-lucide="leaf"></i>
+                    </div>
+                </div>
+                <div class="step-body">
+                    <h3>Analyze Soil</h3>
+                    <p>Provide your soil parameters (NPK, pH, moisture, temperature). Our system analyzes your unique conditions.</p>
+                </div>
+            </div>
+            
+            <!-- Step 2: Get AI Recommendation -->
+            <div class="step-card step-card-with-img animate-slide-up" style="animation-delay: 150ms;">
+                <div class="step-img-wrapper">
+                    <img src="{{ url_for('static', filename='images/step-ai-recommendation.jpg') }}" alt="AI Crop Recommendation Engine" class="step-img" loading="lazy">
+                    <div class="step-number-badge">02</div>
+                    <div class="step-icon-float">
+                        <i data-lucide="brain"></i>
+                    </div>
+                </div>
+                <div class="step-body">
+                    <h3>Get AI Recommendation</h3>
+                    <p>Our machine learning model recommends the best crops and fertilizer mix for your conditions.</p>
+                </div>
+            </div>
+            
+            <!-- Step 3: Buy & Grow -->
+            <div class="step-card step-card-with-img animate-slide-up" style="animation-delay: 300ms;">
+                <div class="step-img-wrapper">
+                    <img src="{{ url_for('static', filename='images/step-buy-grow.jpg') }}" alt="Seeds and Marketplace Delivery" class="step-img" loading="lazy">
+                    <div class="step-number-badge">03</div>
+                    <div class="step-icon-float">
+                        <i data-lucide="shopping-cart"></i>
+                    </div>
+                </div>
+                <div class="step-body">
+                    <h3>Buy & Grow</h3>
+                    <p>Purchase recommended seeds and supplies directly from our trusted marketplace. Grow with confidence.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Testimonials -->
+<section class="testimonials">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">What Farmers Say</h2>
+        
+        <div class="testimonials-grid">
+            <div class="testimonial-card animate-slide-up">
+                <div class="stars">
+                    {% for i in range(5) %}<i data-lucide="star" style="fill: var(--color-amber);"></i>{% endfor %}
+                </div>
+                <p class="testimonial-text">"AgriSmart increased my yield by 35% in just one season. The recommendations are spot-on!"</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">RK</div>
+                    <div>
+                        <div class="author-name">Rajesh Kumar</div>
+                        <div class="author-role">Rice Farmer, Punjab</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card animate-slide-up" style="animation-delay: 150ms;">
+                <div class="stars">
+                    {% for i in range(5) %}<i data-lucide="star" style="fill: var(--color-amber);"></i>{% endfor %}
+                </div>
+                <p class="testimonial-text">"The marketplace saved me thousands on fertilizers. Quality products at fair prices!"</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">PM</div>
+                    <div>
+                        <div class="author-name">Priya Malhotra</div>
+                        <div class="author-role">Cotton Farmer, Gujarat</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card animate-slide-up" style="animation-delay: 300ms;">
+                <div class="stars">
+                    {% for i in range(5) %}<i data-lucide="star" style="fill: var(--color-amber);"></i>{% endfor %}
+                </div>
+                <p class="testimonial-text">"Real-time weather and soil data makes planning so much easier. Highly recommended!"</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">AJ</div>
+                    <div>
+                        <div class="author-name">Arjun Joshi</div>
+                        <div class="author-role">Maize Farmer, Maharashtra</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter -->
+<section class="newsletter">
+    <div class="container">
+        <div class="newsletter-content">
+            <h2>Stay Updated</h2>
+            <p>Get weekly crop tips, weather forecasts, and marketplace deals delivered to your inbox.</p>
+            <form class="newsletter-form">
+                <input type="email" placeholder="Enter your email" required>
+                <button type="submit" class="btn btn-primary">Subscribe</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/landing.js') }}"></script>
+{% endblock %}

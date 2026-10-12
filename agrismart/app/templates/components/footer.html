@@ -1,0 +1,81 @@
+<!-- Footer Component -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <!-- Brand & Mission -->
+            <div class="footer-section footer-brand-section">
+                <div class="footer-logo">
+                    <div class="brand-badge-icon">
+                        <i data-lucide="sprout"></i>
+                    </div>
+                    <h4>AgriSmart</h4>
+                </div>
+                <p class="footer-tagline">Empowering farmers with AI-powered crop recommendations and a trusted marketplace.</p>
+                <div class="footer-meta-item">
+                    <i data-lucide="map-pin"></i>
+                    <span>Theni district, Uthamapalayam</span>
+                </div>
+                <div class="footer-meta-item">
+                    <i data-lucide="mail"></i>
+                    <a href="mailto:jainithil04@gmail.com">jainithil04@gmail.com</a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="footer-section">
+                <h4 class="footer-title">Quick Links</h4>
+                <ul class="footer-links">
+                    <li>
+                        <a href="{{ url_for('main.index') }}" class="footer-link-item">
+                            <span class="link-name">Home</span>
+                            <span class="link-sub">Theni district, Uthamapalayam</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('auth.login') }}" class="footer-link-item">
+                            <span class="link-name">Login</span>
+                            <span class="link-sub">Farmer & Admin Portal</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('auth.register') }}" class="footer-link-item">
+                            <span class="link-name">Register</span>
+                            <span class="link-sub">Create Free Account</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- About & Support -->
+            <div class="footer-section">
+                <h4 class="footer-title">About & Resources</h4>
+                <ul class="footer-links">
+                    <li>
+                        <a href="#about" class="footer-link-item">
+                            <span class="link-name">About</span>
+                            <span class="link-sub">Web Developer, Editor</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="mailto:jainithil04@gmail.com" class="footer-link-item">
+                            <span class="link-name">Contact</span>
+                            <span class="link-sub">jainithil04@gmail.com</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#privacy" class="footer-link-item">
+                            <span class="link-name">Privacy Policy</span>
+                            <span class="link-sub">Secure Soil Data & Privacy Policy</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2024 AgriSmart. All rights reserved.</p>
+            <p class="footer-author-tag">Crafted with precision &bull; Theni district, Uthamapalayam</p>
+        </div>
+    </div>
+</footer>
+

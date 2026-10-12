@@ -1,0 +1,424 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping Cart - AgriSmart{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/marketplace.css') }}">
+<style>
+    .cart-page-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 2rem;
+        margin-top: 2rem;
+        align-items: start;
+    }
+    
+    @media (max-width: 900px) {
+        .cart-page-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .cart-item-card {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        gap: 1.5rem;
+    }
+
+    .cart-item-card:last-child {
+        border-bottom: none;
+    }
+
+    .cart-item-card img {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        border-radius: var(--radius-md);
+        background: #ffffff;
+        padding: 4px;
+        border: 1px solid var(--border-color);
+    }
+
+    .cart-item-details {
+        flex: 1;
+    }
+
+    .cart-item-details h4 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+
+    .cart-item-details p {
+        font-size: 0.85rem;
+        color: var(--text-tertiary);
+    }
+
+    .cart-page-qty {
+        display: flex;
+        align-items: center;
+        background: var(--bg-muted);
+        border-radius: var(--radius-sm);
+        padding: 0.25rem;
+    }
+
+    .cart-page-qty button {
+        background: transparent;
+        border: none;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        cursor: pointer;
+        color: var(--text-primary);
+        border-radius: 4px;
+        transition: background 0.2s;
+    }
+
+    .cart-page-qty button:hover {
+        background: var(--border-color-light);
+    }
+
+    .cart-page-qty span {
+        font-size: 0.95rem;
+        font-weight: 700;
+        width: 32px;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Shopping Cart & Checkout</h1>
+            <p class="page-subtitle">Review your agricultural products and proceed to secure payment.</p>
+        </div>
+        <a href="{{ url_for('marketplace.index') }}" class="btn btn-secondary">
+            <i data-lucide="arrow-left"></i>
+            <span>Continue Shopping</span>
+        </a>
+    </div>
+
+    <div class="cart-page-grid">
+        <!-- Cart Items Column -->
+        <div class="glass-card" style="padding: 0;">
+            <div style="padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.5rem;">
+                <i data-lucide="shopping-cart" style="color:var(--color-emerald);"></i>
+                <h3 style="font-size: 1.25rem;">Cart Items</h3>
+            </div>
+            
+            <div id="standaloneCartItemsList">
+                <!-- Rendered by JS -->
+                <div style="padding: 3rem; text-align: center;">
+                    <i data-lucide="loader-2" class="spin" style="width: 32px; height: 32px; color: var(--color-emerald);"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checkout Column -->
+        <div class="glass-card" style="padding: 1.5rem;">
+            <h3 style="font-size: 1.25rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i data-lucide="credit-card" style="color:var(--color-emerald);"></i>
+                <span>Order Summary</span>
+            </h3>
+
+            <!-- Order Cost Breakdown Box -->
+            <div style="background:var(--bg-muted);padding:1rem 1.25rem;border-radius:var(--radius-md);margin-bottom:1.5rem;border:1px solid var(--border-color);">
+                <div style="display:flex;justify-content:space-between;font-size:0.9rem;color:var(--text-secondary);margin-bottom:0.5rem;">
+                    <span>Items Subtotal:</span>
+                    <span id="pageSubtotalDisplay" style="font-weight:600;color:var(--text-primary);">₹0.00</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:0.9rem;color:var(--text-secondary);margin-bottom:0.75rem;">
+                    <span>Delivery Charge:</span>
+                    <span id="pageDeliveryDisplay" style="font-weight:700;color:var(--color-emerald);">FREE (₹0.00)</span>
+                </div>
+                
+                <!-- Free Delivery Progress -->
+                <div id="pageFreeDeliveryTracker" style="margin-bottom: 0.75rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;font-weight:600;margin-bottom: 0.35rem;">
+                        <span id="pageFreeDeliveryText">Add ₹500.00 for FREE Delivery</span>
+                    </div>
+                    <div style="width:100%;height:6px;background:var(--border-color);border-radius:999px;overflow:hidden;">
+                        <div id="pageFreeDeliveryProgress" style="width:0%;height:100%;background:linear-gradient(90deg, #f59e0b, #10b981);border-radius:999px;transition:width 0.3s ease;"></div>
+                    </div>
+                </div>
+
+                <div style="border-top:1px solid var(--border-color);padding-top:0.75rem;display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-weight:700;font-size:1rem;">Total Amount:</span>
+                    <span id="pageTotalDisplay" style="font-size:1.6rem;font-weight:800;color:var(--color-forest-green);font-family:var(--font-heading);">₹0.00</span>
+                </div>
+            </div>
+
+            <form id="standaloneCheckoutForm">
+                <!-- 1. Customer & Shipping Details -->
+                <div style="margin-bottom:1.5rem;">
+                    <span style="font-size:0.8rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.05em;display:block;margin-bottom:0.75rem;">1. Shipping Details</span>
+                    <div style="display:grid;grid-template-columns:1fr;gap:0.75rem;">
+                        <div>
+                            <input type="text" id="pageShipName" required value="{{ current_user.display_name }}" placeholder="Full Name"
+                                style="width:100%;padding:0.65rem 0.85rem;border-radius:var(--radius-md);border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);font-size:0.9rem;">
+                        </div>
+                        <div>
+                            <input type="tel" id="pageShipPhone" required value="{{ current_user.phone or '+91 76038 54975' }}" placeholder="Phone Number"
+                                style="width:100%;padding:0.65rem 0.85rem;border-radius:var(--radius-md);border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);font-size:0.9rem;">
+                        </div>
+                        <div>
+                            <input type="text" id="pageShipAddress" required value="Plot 42, Green Fields Road, India" placeholder="Full Address"
+                                style="width:100%;padding:0.65rem 0.85rem;border-radius:var(--radius-md);border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);font-size:0.9rem;">
+                        </div>
+                        <div>
+                            <input type="text" id="pageShipCity" required value="{{ current_user.location or 'Pune' }}" placeholder="City / District"
+                                style="width:100%;padding:0.65rem 0.85rem;border-radius:var(--radius-md);border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);font-size:0.9rem;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Realistic Payment Mode Selection -->
+                <div style="margin-bottom:1.5rem;">
+                    <span style="font-size:0.8rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.05em;display:block;margin-bottom:0.75rem;">2. Payment Method</span>
+                    
+                    <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                        <label style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-muted);border-radius:var(--radius-md);border:1px solid var(--border-color);cursor:pointer;">
+                            <input type="radio" name="paymentMethod" value="UPI" checked style="width:18px;height:18px;accent-color:var(--color-emerald);">
+                            <span style="font-weight:600;">📱 UPI / QR</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-muted);border-radius:var(--radius-md);border:1px solid var(--border-color);cursor:pointer;">
+                            <input type="radio" name="paymentMethod" value="Card" style="width:18px;height:18px;accent-color:var(--color-emerald);">
+                            <span style="font-weight:600;">💳 Debit / Credit Card</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-muted);border-radius:var(--radius-md);border:1px solid var(--border-color);cursor:pointer;">
+                            <input type="radio" name="paymentMethod" value="NetBanking" style="width:18px;height:18px;accent-color:var(--color-emerald);">
+                            <span style="font-weight:600;">🏦 Net Banking</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-muted);border-radius:var(--radius-md);border:1px solid var(--border-color);cursor:pointer;">
+                            <input type="radio" name="paymentMethod" value="COD" style="width:18px;height:18px;accent-color:var(--color-emerald);">
+                            <span style="font-weight:600;">📦 Cash on Delivery</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg" id="pageConfirmPayBtn" style="width:100%;box-shadow:0 4px 14px rgba(16,185,129,0.35);">
+                    <i data-lucide="lock" style="width:18px;height:18px;"></i>
+                    <span id="pagePayBtnLabel">Secure Checkout (₹0.00)</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Canvas Confetti CDN -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const cartItemsList = document.getElementById('standaloneCartItemsList');
+    const subtotalDisplay = document.getElementById('pageSubtotalDisplay');
+    const deliveryDisplay = document.getElementById('pageDeliveryDisplay');
+    const totalDisplay = document.getElementById('pageTotalDisplay');
+    const payBtnLabel = document.getElementById('pagePayBtnLabel');
+    const freeDeliveryProgress = document.getElementById('pageFreeDeliveryProgress');
+    const freeDeliveryText = document.getElementById('pageFreeDeliveryText');
+    const form = document.getElementById('standaloneCheckoutForm');
+    const submitBtn = document.getElementById('pageConfirmPayBtn');
+
+    let cart = JSON.parse(localStorage.getItem('agrismart_cart') || '[]');
+
+    function saveCart() {
+        localStorage.setItem('agrismart_cart', JSON.stringify(cart));
+        // Force marketplace.js badge to update if needed
+        const badge = document.getElementById('floatingCartCount');
+        if (badge) {
+            const count = cart.reduce((sum, item) => sum + item.qty, 0);
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'flex' : 'none';
+        }
+        renderCart();
+    }
+
+    window.pageUpdateQty = function(id, delta) {
+        const item = cart.find(i => i.id === id);
+        if (!item) return;
+        item.qty += delta;
+        if (item.qty <= 0) {
+            cart = cart.filter(i => i.id !== id);
+        }
+        saveCart();
+    };
+
+    window.pageRemoveItem = function(id) {
+        cart = cart.filter(i => i.id !== id);
+        saveCart();
+    };
+
+    function renderCart() {
+        if (cart.length === 0) {
+            cartItemsList.innerHTML = `
+                <div class="empty-state" style="padding: 4rem 1rem;">
+                    <div class="empty-state-icon">
+                        <i data-lucide="shopping-cart"></i>
+                    </div>
+                    <h3 class="empty-state-title">Your Cart is Empty</h3>
+                    <p class="empty-state-text">Browse our certified seeds and fertilizers to get started.</p>
+                    <a href="/marketplace" class="btn btn-primary" style="margin-top: 1rem;">Go to Marketplace</a>
+                </div>
+            `;
+            updateTotals(0);
+            submitBtn.disabled = true;
+            if (window.lucide) lucide.createIcons();
+            return;
+        }
+
+        let html = '';
+        let subtotal = 0;
+        
+        cart.forEach(item => {
+            const itemTotal = item.price * item.qty;
+            subtotal += itemTotal;
+            html += `
+                <div class="cart-item-card">
+                    <img src="${item.image}" alt="${item.name}" onerror="this.onerror=null; this.src='/static/images/products/fallback_product.jpg';">
+                    <div class="cart-item-details">
+                        <h4>${item.name}</h4>
+                        <p style="color:var(--color-emerald); font-weight: 700; font-size: 1rem; margin-top: 0.25rem;">₹${item.price.toFixed(2)}</p>
+                    </div>
+                    <div class="cart-page-qty">
+                        <button type="button" onclick="window.pageUpdateQty(${item.id}, -1)">-</button>
+                        <span>${item.qty}</span>
+                        <button type="button" onclick="window.pageUpdateQty(${item.id}, 1)">+</button>
+                    </div>
+                    <div style="font-weight: 800; font-size: 1.1rem; width: 80px; text-align: right;">
+                        ₹${itemTotal.toFixed(2)}
+                    </div>
+                    <button type="button" class="btn-icon" style="color:var(--color-error); margin-left: 0.5rem;" onclick="window.pageRemoveItem(${item.id})">
+                        <i data-lucide="trash-2" style="width:20px;height:20px;"></i>
+                    </button>
+                </div>
+            `;
+        });
+
+        cartItemsList.innerHTML = html;
+        submitBtn.disabled = false;
+        updateTotals(subtotal);
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function updateTotals(subtotal) {
+        const deliveryFee = subtotal === 0 ? 0 : (subtotal >= 500.0 ? 0.0 : 50.0);
+        const total = subtotal + deliveryFee;
+
+        subtotalDisplay.textContent = `₹${subtotal.toFixed(2)}`;
+        
+        if (deliveryFee === 0 && subtotal > 0) {
+            deliveryDisplay.innerHTML = `<span style="color:#10b981;font-weight:700;">FREE (₹0.00)</span>`;
+            freeDeliveryProgress.style.width = '100%';
+            freeDeliveryProgress.style.background = '#10b981';
+            freeDeliveryText.innerHTML = '🎉 <strong style="color:#10b981;">FREE Delivery Unlocked!</strong>';
+        } else {
+            deliveryDisplay.innerHTML = `₹${deliveryFee.toFixed(2)}`;
+            if (subtotal === 0) {
+                freeDeliveryProgress.style.width = '0%';
+                freeDeliveryText.textContent = 'Free Delivery on orders ₹500 and above';
+            } else {
+                const pct = Math.min((subtotal / 500.0) * 100, 100);
+                const needed = (500.0 - subtotal).toFixed(2);
+                freeDeliveryProgress.style.width = `${pct}%`;
+                freeDeliveryProgress.style.background = 'linear-gradient(90deg, #f59e0b, #10b981)';
+                freeDeliveryText.innerHTML = `Add <strong>₹${needed}</strong> more for <span style="color:#10b981;font-weight:700;">FREE Delivery</span>`;
+            }
+        }
+
+        totalDisplay.textContent = `₹${total.toFixed(2)}`;
+        payBtnLabel.textContent = `Secure Checkout (₹${total.toFixed(2)})`;
+    }
+
+    renderCart();
+
+    // Form submission
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (cart.length === 0) {
+            window.AgriApp?.showToast('Cart is empty!', 'error');
+            return;
+        }
+
+        const shipping = {
+            name: document.getElementById('pageShipName').value,
+            phone: document.getElementById('pageShipPhone').value,
+            address: document.getElementById('pageShipAddress').value,
+            city: document.getElementById('pageShipCity').value
+        };
+
+        const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+        let paymentMethodName = '';
+        if (selectedPaymentMethod === 'UPI') paymentMethodName = 'UPI (Google Pay / PhonePe)';
+        else if (selectedPaymentMethod === 'Card') paymentMethodName = 'Debit / Credit Card';
+        else if (selectedPaymentMethod === 'NetBanking') paymentMethodName = 'Net Banking';
+        else if (selectedPaymentMethod === 'COD') paymentMethodName = 'Cash on Delivery';
+
+        const payment = {
+            method: paymentMethodName,
+            transaction_id: `TXN-${Date.now().toString(36).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`
+        };
+
+        const originalHtml = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <div style="display:flex;align-items:center;justify-content:center;gap:0.6rem;">
+                <i data-lucide="loader-2" class="spin"></i>
+                <span>Processing Order...</span>
+            </div>
+        `;
+        if (window.lucide) lucide.createIcons();
+
+        try {
+            await new Promise(r => setTimeout(r, 1200)); // Simulate realistic network delay
+
+            const res = await fetch('/marketplace/api/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items: cart, shipping, payment })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                if (window.confetti) {
+                    confetti({
+                        particleCount: 150,
+                        spread: 100,
+                        origin: { y: 0.5 }
+                    });
+                }
+                
+                // Clear cart
+                cart = [];
+                localStorage.setItem('agrismart_cart', JSON.stringify([]));
+                
+                window.AgriApp?.showToast('Order Confirmed! Redirecting to orders...', 'success');
+                setTimeout(() => {
+                    window.location.href = '/marketplace/orders';
+                }, 1800);
+            } else {
+                window.AgriApp?.showToast(data.message || 'Payment failed.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHtml;
+                if (window.lucide) lucide.createIcons();
+            }
+        } catch (err) {
+            window.AgriApp?.showToast('Network error during checkout.', 'error');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalHtml;
+            if (window.lucide) lucide.createIcons();
+        }
+    });
+});
+</script>
+{% endblock %}

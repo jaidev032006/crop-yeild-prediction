@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}My Farm Orders - AgriSmart{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/marketplace.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">My Orders & Shipments</h1>
+            <p class="page-subtitle">Track real-time delivery milestones and logistics for seeds, soil nutrients, and equipment.</p>
+        </div>
+        <a href="{{ url_for('marketplace.index') }}" class="btn btn-primary">
+            <i data-lucide="plus"></i>
+            <span>Order New Supplies</span>
+        </a>
+    </div>
+
+    {% if orders %}
+        <div style="display:flex;flex-direction:column;gap:1.5rem;">
+            {% for order in orders %}
+                <div class="glass-card order-card">
+                    <!-- Order Header -->
+                    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border-color-light);padding-bottom:1rem;flex-wrap:wrap;gap:0.75rem;">
+                        <div>
+                            <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:600;">Order Reference</span>
+                            <h3 style="font-size:1.15rem;font-weight:700;">#{{ order.order_number }}</h3>
+                            <span style="font-size:0.8rem;color:var(--text-tertiary);">Placed on {{ order.created_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="display:flex; justify-content:flex-end; align-items:center; gap:0.5rem; margin-bottom: 0.25rem;">
+                                {% if order.status not in ['Shipped', 'Delivered', 'Cancelled'] %}
+                                    <button onclick="cancelOrder({{ order.id }})" class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; border-color: var(--color-error); color: var(--color-error);"><i data-lucide="x" style="width:14px;height:14px;margin-right:2px;"></i>Cancel</button>
+                                {% endif %}
+                                <span class="badge {% if order.status == 'Delivered' %}badge-emerald{% elif order.status == 'Shipped' %}badge-blue{% elif order.status == 'Cancelled' %}badge-gray{% else %}badge-amber{% endif %}">
+                                    {{ order.status }}
+                                </span>
+                            </div>
+                            <div style="font-size:1.35rem;font-weight:800;font-family:var(--font-heading);color:var(--color-forest-green);margin-top:0.25rem;">
+                                ₹{{ "%.2f"|format(order.total_amount) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visual Stepper Timeline -->
+                    {% if order.status != 'Cancelled' %}
+                        <div class="order-stepper">
+                            {% set step = order.status_step %}
+                            {% set width_pct = (step - 1) * 33.33 %}
+                            <div class="order-stepper-progress" style="width: {{ width_pct }}%;"></div>
+
+                            <div class="stepper-step {% if step >= 1 %}completed{% endif %} {% if step == 1 %}active{% endif %}">
+                                <div class="step-circle"><i data-lucide="check" style="width:16px;height:16px;"></i></div>
+                                <span class="step-label">Pending</span>
+                            </div>
+
+                            <div class="stepper-step {% if step >= 2 %}completed{% endif %} {% if step == 2 %}active{% endif %}">
+                                <div class="step-circle"><i data-lucide="check" style="width:16px;height:16px;"></i></div>
+                                <span class="step-label">Confirmed</span>
+                            </div>
+
+                            <div class="stepper-step {% if step >= 3 %}completed{% endif %} {% if step == 3 %}active{% endif %}">
+                                <div class="step-circle"><i data-lucide="truck" style="width:16px;height:16px;"></i></div>
+                                <span class="step-label">Shipped</span>
+                            </div>
+
+                            <div class="stepper-step {% if step >= 4 %}completed{% endif %} {% if step == 4 %}active{% endif %}">
+                                <div class="step-circle"><i data-lucide="home" style="width:16px;height:16px;"></i></div>
+                                <span class="step-label">Delivered</span>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div style="padding:1rem;background:rgba(239,68,68,0.1);border-radius:var(--radius-md);margin:1rem 0;color:var(--color-error);font-weight:600;display:flex;align-items:center;gap:0.5rem;">
+                            <i data-lucide="alert-circle"></i>
+                            <span>This order was cancelled.</span>
+                        </div>
+                    {% endif %}
+
+                    <!-- Order Items Details -->
+                    <div style="background:var(--bg-muted);border-radius:var(--radius-lg);padding:1rem 1.25rem;margin-top:1rem;">
+                        <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;letter-spacing:0.05em;display:block;margin-bottom:0.75rem;">Items in Package</span>
+                        <div style="display:flex;flex-direction:column;gap:0.6rem;">
+                            {% for item in order.items %}
+                                <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.9rem;">
+                                    <div style="display:flex;align-items:center;gap:0.75rem;">
+                                        <span style="width:24px;height:24px;background:var(--bg-secondary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;">{{ item.quantity }}x</span>
+                                        <strong>{{ item.product.name if item.product else 'Agricultural Product' }}</strong>
+                                    </div>
+                                    <span style="font-weight:600;">₹{{ "%.2f"|format(item.unit_price * item.quantity) }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Shipping Address & Payment Summary -->
+                    <div style="display:flex;justify-content:space-between;margin-top:1rem;font-size:0.825rem;color:var(--text-secondary);flex-wrap:wrap;gap:1rem;">
+                        <div>
+                            <strong>Delivery Address:</strong> {{ order.shipping_name }}, {{ order.shipping_address }}, {{ order.shipping_city }} (Ph: {{ order.shipping_phone }})
+                        </div>
+                        <div>
+                            <strong>Payment:</strong> {{ order.payment_method }} ({{ order.payment_status }})
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state glass-card" style="padding:4rem 2rem;">
+            <div class="empty-state-icon">
+                <i data-lucide="package-open"></i>
+            </div>
+            <h3 class="empty-state-title">No Orders Placed Yet</h3>
+            <p class="empty-state-text">Explore our marketplace for certified seeds, fertilizers, and farm equipment directly tailored to your soil recommendation.</p>
+            <a href="{{ url_for('marketplace.index') }}" class="btn btn-primary">
+                <i data-lucide="store"></i>
+                <span>Explore Marketplace</span>
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+{% block extra_js %}
+<script>
+async function cancelOrder(orderId) {
+    if (!confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/marketplace/api/orders/${orderId}/cancel`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            window.location.reload();
+        } else {
+            alert(data.message || 'Failed to cancel order.');
+        }
+    } catch (err) {
+        console.error('Error cancelling order:', err);
+        alert('An error occurred. Please try again later.');
+    }
+}
+</script>
+{% endblock %}
+{% endblock %}

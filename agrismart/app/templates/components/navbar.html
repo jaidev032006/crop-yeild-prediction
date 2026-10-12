@@ -1,0 +1,220 @@
+<!-- Desktop Sidebar -->
+<aside class="sidebar" id="appSidebar">
+    <div class="sidebar-brand">
+        <div class="brand-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M7 20h10"></path>
+                <path d="M10 20c5.5-2.5.8-6.4 3-10"></path>
+                <path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"></path>
+                <path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"></path>
+            </svg>
+        </div>
+        <div class="brand-text">
+            <span class="brand-name">AgriSmart</span>
+            <span class="brand-tag">Precision Agro AI</span>
+        </div>
+    </div>
+    
+    <nav class="sidebar-nav">
+        <span class="nav-section-title">Core Advisory</span>
+        <a href="{{ url_for('dashboard.index') }}" class="nav-link {% if request.endpoint == 'dashboard.index' %}active{% endif %}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="7" height="7" x="3" y="3" rx="1"></rect>
+                <rect width="7" height="7" x="14" y="3" rx="1"></rect>
+                <rect width="7" height="7" x="14" y="14" rx="1"></rect>
+                <rect width="7" height="7" x="3" y="14" rx="1"></rect>
+            </svg>
+            <span>Overview</span>
+        </a>
+        <a href="{{ url_for('predict.index') }}" class="nav-link {% if request.blueprint == 'predict' %}active{% endif %}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
+            </svg>
+            <span>AI Crop Predictor</span>
+        </a>
+        <a href="{{ url_for('analytics.index') }}" class="nav-link {% if request.blueprint == 'analytics' %}active{% endif %}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 3v18h18"></path>
+                <path d="M18 17V9"></path>
+                <path d="M13 17V5"></path>
+                <path d="M8 17v-3"></path>
+            </svg>
+            <span>Agro Analytics</span>
+        </a>
+        
+        <span class="nav-section-title">Commerce & Community</span>
+        <a href="{{ url_for('marketplace.index') }}" class="nav-link {% if request.endpoint == 'marketplace.index' %}active{% endif %}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"></path>
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"></path>
+                <path d="M2 7h20"></path>
+            </svg>
+            <span>Marketplace</span>
+        </a>
+        <a href="{{ url_for('marketplace.orders') }}" class="nav-link {% if request.endpoint == 'marketplace.orders' %}active{% endif %}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m16 16 2 2 4-4"></path>
+                <path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-.99"></path>
+                <path d="m3.3 7 8.7 5 8.7-5"></path>
+                <path d="M12 22V12"></path>
+            </svg>
+            <span>My Orders</span>
+        </a>
+        <a href="{{ url_for('feedback.index') }}" class="nav-link {% if request.blueprint == 'feedback' %}active{% endif %}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>Farmer Feedback</span>
+        </a>
+        
+        <span class="nav-section-title">Account</span>
+        <a href="{{ url_for('profile.index') }}" class="nav-link {% if request.blueprint == 'profile' %}active{% endif %}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>My Profile</span>
+        </a>
+    </nav>
+    
+    <div class="sidebar-footer">
+        <div class="user-mini">
+            <div class="user-avatar-badge" style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--color-forest-green),var(--color-emerald));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;box-shadow:0 2px 8px rgba(16,185,129,0.3);">
+                {{ (current_user.first_name or current_user.username)[:2]|upper }}
+            </div>
+            <div class="user-info">
+                <span class="user-name">{{ current_user.display_name }}</span>
+                <span class="user-role">{{ current_user.location or 'Farmer Partner' }}</span>
+            </div>
+        </div>
+        <a href="{{ url_for('auth.logout') }}" class="btn-icon" title="Sign Out">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" x2="9" y1="12" y2="12"></line>
+            </svg>
+        </a>
+    </div>
+</aside>
+
+<!-- Top Bar -->
+<header class="topbar">
+    <div class="topbar-greeting">
+        <h2 class="greeting-text">{{ time_greeting }}, {{ current_user.first_name or current_user.username }} 👋</h2>
+        <span class="greeting-date" id="liveDateTimeDisplay">Loading date...</span>
+    </div>
+    
+    <div class="topbar-actions">
+        <!-- Live Weather & Live Time Chip -->
+        <div class="weather-chip" id="topbarWeatherChip" title="Real-time Agro Weather & Live Clock">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-amber);">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2"></path>
+                <path d="M12 20v2"></path>
+                <path d="m4.93 4.93 1.41 1.41"></path>
+                <path d="m17.66 17.66 1.41 1.41"></path>
+                <path d="M2 12h2"></path>
+                <path d="M20 12h2"></path>
+                <path d="m6.34 17.66-1.41 1.41"></path>
+                <path d="m19.07 4.93-1.41 1.41"></path>
+            </svg>
+            <span id="topbarWeatherText">Pune, Maharashtra: 27.1°C, Mainly Clear</span>
+            <span style="color:var(--border-focus);opacity:0.6;margin:0 2px;">•</span>
+            <span id="liveClockTicker" style="font-family:var(--font-heading);font-weight:700;color:var(--color-emerald);letter-spacing:0.02em;">--:--:--</span>
+        </div>
+        
+        <!-- Theme Toggle -->
+        <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
+            <svg id="themeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+            </svg>
+        </button>
+        
+        <!-- Notifications Bell -->
+        <div class="notif-wrapper">
+            <button class="notif-btn" id="notifBtn" title="Notifications" aria-label="Notifications">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+                </svg>
+                <span class="notif-badge"></span>
+            </button>
+            <div class="notif-dropdown" id="notifDropdown">
+                <div class="notif-header">
+                    <span class="notif-title">Agricultural Alerts</span>
+                    <span class="badge badge-emerald">Live</span>
+                </div>
+                <div class="notif-item">
+                    <div class="notif-item-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+                            <path d="M16 14v6"></path>
+                            <path d="M8 14v6"></path>
+                            <path d="M12 16v6"></path>
+                        </svg>
+                    </div>
+                    <div class="notif-item-content">
+                        <strong>Monsoon Advisory</strong>
+                        <span>Optimal sowing window open for Kharif crops.</span>
+                        <span class="notif-item-time">2 hours ago</span>
+                    </div>
+                </div>
+                <div class="notif-item">
+                    <div class="notif-item-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            <path d="m9 12 2 2 4-4"></path>
+                        </svg>
+                    </div>
+                    <div class="notif-item-content">
+                        <strong>Model Accuracy Verified</strong>
+                        <span>Random Forest ensemble running at 98.6% accuracy.</span>
+                        <span class="notif-item-time">Today</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Mobile Bottom Navigation Bar -->
+<nav class="bottom-nav">
+    <a href="{{ url_for('dashboard.index') }}" class="bottom-nav-item {% if request.endpoint == 'dashboard.index' %}active{% endif %}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="7" height="7" x="3" y="3" rx="1"></rect>
+            <rect width="7" height="7" x="14" y="3" rx="1"></rect>
+            <rect width="7" height="7" x="14" y="14" rx="1"></rect>
+            <rect width="7" height="7" x="3" y="14" rx="1"></rect>
+        </svg>
+        <span>Home</span>
+    </a>
+    <a href="{{ url_for('predict.index') }}" class="bottom-nav-item {% if request.blueprint == 'predict' %}active{% endif %}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
+        </svg>
+        <span>Predict</span>
+    </a>
+    <a href="{{ url_for('marketplace.index') }}" class="bottom-nav-item {% if request.endpoint == 'marketplace.index' %}active{% endif %}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"></path>
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+        </svg>
+        <span>Shop</span>
+    </a>
+    <a href="{{ url_for('marketplace.orders') }}" class="bottom-nav-item {% if request.endpoint == 'marketplace.orders' %}active{% endif %}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m16 16 2 2 4-4"></path>
+            <path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-.99"></path>
+        </svg>
+        <span>Orders</span>
+    </a>
+    <a href="{{ url_for('profile.index') }}" class="bottom-nav-item {% if request.blueprint == 'profile' %}active{% endif %}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span>Profile</span>
+    </a>
+</nav>
+

@@ -1,0 +1,606 @@
+/* =========================================
+   AGRISMART - PREDICTION & FERTILIZER ANIMATIONS
+   ========================================= */
+
+.predict-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 1.75rem;
+    align-items: start;
+}
+
+/* Preset Chips */
+.presets-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+.preset-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: var(--radius-full);
+    background: var(--bg-muted);
+    border: 1px solid var(--border-color);
+    font-size: 0.825rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.preset-chip:hover {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: var(--color-emerald);
+    color: var(--color-emerald-dark);
+    transform: translateY(-2px);
+}
+
+.preset-chip.active {
+    background: var(--color-emerald);
+    color: #ffffff;
+    border-color: var(--color-emerald-dark);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+}
+
+/* Range Sliders */
+.slider-group {
+    margin-bottom: 1.25rem;
+}
+
+.slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+}
+
+.slider-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.slider-val-badge {
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-emerald-dark);
+    background: var(--color-emerald-light);
+    padding: 0.15rem 0.55rem;
+    border-radius: var(--radius-sm);
+}
+
+[data-theme="dark"] .slider-val-badge {
+    background: rgba(16, 185, 129, 0.2);
+    color: #6ee7b7;
+}
+
+.range-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--bg-muted);
+    outline: none;
+    transition: background 0.2s;
+}
+
+.range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-forest-green), var(--color-emerald));
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    border: 2px solid #ffffff;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.range-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+}
+
+.range-slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--color-emerald);
+    cursor: pointer;
+    border: 2px solid #ffffff;
+}
+
+.slider-ticks {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+/* Loading Seedling Sprout Animation */
+.loading-seedling-container {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.seedling-svg {
+    width: 120px;
+    height: 120px;
+    animation: sproutPulse 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes sproutPulse {
+    0% { transform: scale(0.9) rotate(-3deg); }
+    100% { transform: scale(1.05) rotate(3deg); }
+}
+
+.seedling-leaf {
+    transform-origin: bottom center;
+    animation: leafUnfurl 2s ease-in-out infinite alternate;
+}
+
+@keyframes leafUnfurl {
+    0% { transform: scale(0.6) rotate(-15deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+/* Results Display Card & 3D Flip */
+.result-card-container {
+    display: none;
+    flex-direction: column;
+    gap: 1.5rem;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.crop-hero-banner {
+    background: linear-gradient(135deg, var(--color-forest-green), #047857);
+    color: #ffffff;
+    border-radius: var(--radius-xl);
+    padding: 1.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 25px rgba(15, 81, 50, 0.25);
+    position: relative;
+    overflow: hidden;
+}
+
+.crop-hero-banner::after {
+    content: '';
+    position: absolute;
+    right: -40px;
+    bottom: -40px;
+    width: 160px;
+    height: 160px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+    border-radius: 50%;
+}
+
+.crop-name-large {
+    font-size: 2.25rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-top: 0.25rem;
+}
+
+.crop-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.crop-stat-box {
+    background: var(--bg-muted);
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.crop-stat-lbl {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.crop-stat-val {
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-family: var(--font-heading);
+    color: var(--text-primary);
+    margin-top: 0.15rem;
+}
+
+/* =========================================
+   SIGNATURE FERTILIZER ANIMATION STYLES
+   ========================================= */
+.fertilizer-showcase {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.fert-anim-stage {
+    position: relative;
+    height: 220px;
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.05) 0%, rgba(15, 81, 50, 0.1) 100%);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+    padding-bottom: 12px;
+}
+
+/* Fertilizer Granules Rainfall */
+.granule-emitter {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.granule-dot {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #f59e0b;
+    box-shadow: 0 0 6px #f59e0b;
+    animation: granuleFall 1.4s ease-in infinite;
+    opacity: 0;
+}
+
+.granule-dot.n-dot { background: #3b82f6; box-shadow: 0 0 6px #3b82f6; }
+.granule-dot.p-dot { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
+.granule-dot.k-dot { background: #10b981; box-shadow: 0 0 6px #10b981; }
+
+@keyframes granuleFall {
+    0% {
+        top: -10px;
+        opacity: 0;
+        transform: translateY(0) scale(0.6);
+    }
+    30% {
+        opacity: 0.9;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        top: 82%;
+        opacity: 0;
+        transform: translateY(0) scale(1.2);
+    }
+}
+
+/* Morphing Potted Plant SVG */
+.morph-plant-svg {
+    width: 140px;
+    height: 180px;
+    z-index: 2;
+    transition: all 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.morph-plant-stem {
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+    transition: stroke-dashoffset 1.5s ease-out;
+}
+
+.morph-plant-leaf {
+    transform-origin: bottom center;
+    transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1), fill 1.5s ease;
+}
+
+/* Growth Stages */
+.stage-1 .morph-plant-stem { stroke-dashoffset: 140; }
+.stage-1 .morph-plant-leaf { transform: scale(0.35); fill: #86efac; }
+
+.stage-2 .morph-plant-stem { stroke-dashoffset: 70; }
+.stage-2 .morph-plant-leaf { transform: scale(0.7) rotate(5deg); fill: #34d399; }
+
+.stage-3 .morph-plant-stem { stroke-dashoffset: 0; }
+.stage-3 .morph-plant-leaf { transform: scale(1.1) rotate(0deg); fill: #059669; filter: drop-shadow(0 2px 8px rgba(16, 185, 129, 0.5)); }
+
+/* Typewriter & Staggered Advice Items */
+.fert-advice-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.fert-advice-item {
+    background: var(--bg-muted);
+    border-left: 3px solid var(--color-emerald);
+    padding: 0.75rem 1rem;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.fert-advice-item.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (max-width: 1024px) {
+    .predict-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================
+   LOCATION INTELLIGENCE & UNIFIED SELECTOR
+   ========================================= */
+.mode-toggle-container {
+    display: flex;
+    align-items: center;
+    background: var(--bg-muted);
+    padding: 0.35rem;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+    gap: 0.35rem;
+}
+
+.mode-toggle-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.15rem;
+    border-radius: var(--radius-full);
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mode-toggle-btn:hover {
+    color: var(--text-primary);
+}
+
+.mode-toggle-btn.active {
+    background: var(--color-emerald);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+}
+
+.location-picker-card {
+    background: linear-gradient(145deg, rgba(16, 185, 129, 0.05) 0%, rgba(59, 130, 246, 0.03) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.location-dropdown-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+@media (max-width: 640px) {
+    .location-dropdown-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.location-select-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.location-select-wrap label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.custom-select {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    outline: none;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.custom-select:focus {
+    border-color: var(--color-emerald);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+/* District Profile Card */
+.district-telemetry-box {
+    margin-top: 1.25rem;
+    padding: 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    animation: fadeInSlide 0.35s ease;
+}
+
+.telemetry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.telemetry-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.telemetry-gps {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    font-family: monospace;
+    background: var(--bg-muted);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-sm);
+}
+
+.soil-badge-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.65rem;
+    margin: 0.85rem 0;
+}
+
+@media (max-width: 640px) {
+    .soil-badge-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.soil-badge-card {
+    background: var(--bg-muted);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--radius-sm);
+    padding: 0.55rem;
+    text-align: center;
+}
+
+.soil-badge-name {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.soil-badge-val {
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.val-high { color: #10b981; }
+.val-med { color: #f59e0b; }
+.val-low { color: #3b82f6; }
+.val-neutral { color: #10b981; }
+.val-acidic { color: #ef4444; }
+.val-alkaline { color: #8b5cf6; }
+
+.traditional-crops-wrap {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-color-light);
+}
+
+.traditional-crops-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-tertiary);
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.crop-tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.crop-tag {
+    font-size: 0.78rem;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--color-emerald-dark);
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    font-weight: 500;
+}
+
+.live-weather-telemetry-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.08) 0%, rgba(14, 165, 233, 0.08) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    padding: 0.5rem 0.85rem;
+    border-radius: var(--radius-md);
+    margin-top: 0.85rem;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+}
+
+.regional-match-banner {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: var(--radius-md);
+    padding: 0.85rem 1rem;
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
